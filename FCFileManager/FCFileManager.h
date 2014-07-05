@@ -123,7 +123,7 @@
 +(NSURL *)urlForItemAtPath:(NSString *)path;
 
 +(BOOL)writeFileAtPath:(NSString *)path content:(NSObject *)content;
-+(BOOL)writeFileAtPath:(NSString *)path content:(NSObject *)content error:(NSError **)error;
++(BOOL)writeFileAtPath:(NSString *)path content:(NSObject *)content isCustom:(BOOL)isCustom error:(NSError **)error;
 
 @end
 

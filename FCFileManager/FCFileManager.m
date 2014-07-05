@@ -157,7 +157,7 @@ static NSString *_pathForTemporaryDirectory = nil;
         
         if(content != nil)
         {
-            [self writeFileAtPath:path content:content error:error];
+            [self writeFileAtPath:path content:content isCustom:NO error:error];
         }
         
         return (error == nil);
@@ -712,11 +712,11 @@ static NSString *_pathForTemporaryDirectory = nil;
 
 +(BOOL)writeFileAtPath:(NSString *)path content:(NSObject *)content
 {
-    return [self writeFileAtPath:path content:content error:nil];
+    return [self writeFileAtPath:path content:content isCustom:NO error:nil];
 }
 
 
-+(BOOL)writeFileAtPath:(NSString *)path content:(NSObject *)content error:(NSError **)error
++(BOOL)writeFileAtPath:(NSString *)path content:(NSObject *)content isCustom:(BOOL)isCustom error:(NSError **)error
 {
     if(content == nil)
     {
@@ -727,53 +727,53 @@ static NSString *_pathForTemporaryDirectory = nil;
     
     NSString *absolutePath = [self absolutePath:path];
     
-    if([content isKindOfClass:[NSMutableArray class]])
+    if(!isCustom && [content isKindOfClass:[NSMutableArray class]])
     {
-        [((NSMutableArray *)content) writeToFile:absolutePath atomically:YES];
+        return [((NSMutableArray *)content) writeToFile:absolutePath atomically:YES];
     }
-    else if([content isKindOfClass:[NSArray class]])
+    else if(!isCustom && [content isKindOfClass:[NSArray class]])
     {
-        [((NSArray *)content) writeToFile:absolutePath atomically:YES];
+        return [((NSArray *)content) writeToFile:absolutePath atomically:YES];
     }
-    else if([content isKindOfClass:[NSMutableData class]])
+    else if(!isCustom && [content isKindOfClass:[NSMutableData class]])
     {
-        [((NSMutableData *)content) writeToFile:absolutePath atomically:YES];
+        return [((NSMutableData *)content) writeToFile:absolutePath atomically:YES];
     }
-    else if([content isKindOfClass:[NSData class]])
+    else if(!isCustom && [content isKindOfClass:[NSData class]])
     {
-        [((NSData *)content) writeToFile:absolutePath atomically:YES];
+        return [((NSData *)content) writeToFile:absolutePath atomically:YES];
     }
-    else if([content isKindOfClass:[NSMutableDictionary class]])
+    else if(!isCustom && [content isKindOfClass:[NSMutableDictionary class]])
     {
-        [((NSMutableDictionary *)content) writeToFile:absolutePath atomically:YES];
+        return [((NSMutableDictionary *)content) writeToFile:absolutePath atomically:YES];
     }
-    else if([content isKindOfClass:[NSDictionary class]])
+    else if(!isCustom && [content isKindOfClass:[NSDictionary class]])
     {
-        [((NSDictionary *)content) writeToFile:absolutePath atomically:YES];
+        return [((NSDictionary *)content) writeToFile:absolutePath atomically:YES];
     }
-    else if([content isKindOfClass:[NSJSONSerialization class]])
+    else if(!isCustom && [content isKindOfClass:[NSJSONSerialization class]])
     {
-        [((NSDictionary *)content) writeToFile:absolutePath atomically:YES];
+        return [((NSDictionary *)content) writeToFile:absolutePath atomically:YES];
     }
-    else if([content isKindOfClass:[NSMutableString class]])
+    else if(!isCustom && [content isKindOfClass:[NSMutableString class]])
     {
-        [[((NSString *)content) dataUsingEncoding:NSUTF8StringEncoding] writeToFile:absolutePath atomically:YES];
+        return [[((NSString *)content) dataUsingEncoding:NSUTF8StringEncoding] writeToFile:absolutePath atomically:YES];
     }
-    else if([content isKindOfClass:[NSString class]])
+    else if(!isCustom && [content isKindOfClass:[NSString class]])
     {
-        [[((NSString *)content) dataUsingEncoding:NSUTF8StringEncoding] writeToFile:absolutePath atomically:YES];
+        return [[((NSString *)content) dataUsingEncoding:NSUTF8StringEncoding] writeToFile:absolutePath atomically:YES];
     }
-    else if([content isKindOfClass:[UIImage class]])
+    else if(!isCustom && [content isKindOfClass:[UIImage class]])
     {
-        [UIImagePNGRepresentation((UIImage *)content) writeToFile:absolutePath atomically:YES];
+        return [UIImagePNGRepresentation((UIImage *)content) writeToFile:absolutePath atomically:YES];
     }
-    else if([content isKindOfClass:[UIImageView class]])
+    else if(!isCustom && [content isKindOfClass:[UIImageView class]])
     {
-        return [self writeFileAtPath:absolutePath content:((UIImageView *)content).image error:error];
+        return [self writeFileAtPath:absolutePath content:((UIImageView *)content).image isCustom:NO error:error];
     }
-    else if([content conformsToProtocol:@protocol(NSCoding)])
+    else if(isCustom && [content conformsToProtocol:@protocol(NSCoding)])
     {
-        [NSKeyedArchiver archiveRootObject:content toFile:absolutePath];
+        return [NSKeyedArchiver archiveRootObject:content toFile:absolutePath];
     }
     else {
         [NSException raise:@"Invalid content type" format:@"content of type %@ is not handled.", NSStringFromClass([content class])];
@@ -781,7 +781,7 @@ static NSString *_pathForTemporaryDirectory = nil;
         return NO;
     }
 
-    return YES;
+    return NO;
 }
 
 
